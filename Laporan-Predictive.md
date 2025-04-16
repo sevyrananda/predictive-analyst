@@ -53,7 +53,7 @@ Jumlah data : **870 sampel** (lebih dari 500, sesuai kriteria submission).
 - ✔ Distribusi gaji di berbagai wilayah.
 - ✔ Korelasi antara tahun dan rata-rata gaji.
  
-![image](https://github.com/user-attachments/assets/6d0b9b32-6ed5-4498-b599-1ed5928f2561)
+![image](https://github.com/user-attachments/assets/692eee06-1b16-4fde-ac04-4ac70899c5dc)
  
 Visualisasi diatas menunjukkan bahwa : Gaji nasional cenderung meningkat setiap tahun, tetapi dengan pola fluktuatif di beberapa tahun.
  
@@ -91,6 +91,18 @@ Model yang digunakan:
 **Improvement Model**
 - Hyperparameter tuning untuk meningkatkan performa model.
 - Cross-validation untuk menghindari overfitting.
+
+**Cara Kerja Model**
+1. ARIMA (AutoRegressive Integrated Moving Average), ARIMA adalah model statistik untuk analisis deret waktu yang menggabungkan tiga komponen utama:
+- AutoRegressive (AR): Model menggunakan nilai masa lalu untuk memprediksi nilai saat ini.
+- Integrated (I): Menggunakan differencing (pengurangan antar waktu) untuk membuat data menjadi stasioner.
+- Moving Average (MA): Menggunakan error dari prediksi sebelumnya sebagai bagian dari model saat ini.
+
+Prosesnya dimulai dengan memastikan data stasioner (melalui differencing), lalu menganalisis ACF dan PACF untuk menentukan parameter p, d, dan q, dan akhirnya membangun model ARIMA yang memprediksi nilai masa depan berdasarkan pola historis.
+
+2. LSTM (Long Short-Term Memory), LSTM adalah tipe dari Recurrent Neural Network (RNN) yang dirancang untuk mengatasi masalah long-term dependency pada data sekuensial, seperti time series. LSTM menggunakan cell state dan gate (input, forget, dan output gate) untuk mengatur aliran informasi dalam jaringan.
+
+Model LSTM membaca data urutan (misal gaji per tahun) dan belajar mengenali pola yang muncul dalam urutan tersebut. Karena LSTM mampu mengingat informasi penting dari masa lalu dalam jangka panjang, model ini cocok untuk memprediksi tren jangka panjang seperti gaji. Data gaji distandarisasi dan diubah ke bentuk sekuens (misalnya sliding window) agar bisa diproses oleh LSTM layer.
  
 Model terbaik dipilih berdasarkan nilai RMSE dan MAE yang paling rendah.
  
@@ -101,32 +113,50 @@ Model terbaik dipilih berdasarkan nilai RMSE dan MAE yang paling rendah.
 Metrik evaluasi yang digunakan:
 1. **RMSE (Root Mean Squared Error)** - mengukur seberapa jauh prediksi dari nilai aktual.
    
-   ![image](https://github.com/user-attachments/assets/948cc8f0-0cf7-48b1-9c3f-c3ac993f2825)
+   ![Screenshot 2025-03-14 163726](https://github.com/user-attachments/assets/98d13f6b-e51d-4dae-bb85-488a3cb3ed78)
+
  
 3. **MAE (Mean Absolute Error)** - mengukur rata-rata error absolut dari prediksi.
  
-   ![image](https://github.com/user-attachments/assets/d5a3871a-4899-4085-91cd-04f346a9440d)
- 
+   ![Screenshot 2025-03-14 163807](https://github.com/user-attachments/assets/e2232115-9b56-4a02-a61c-5479c6956619)
+
    
 4. **MSE (Mean Squared Error)** – Mengukur error dengan memberi bobot lebih besar pada kesalahan yang lebih besar.
  
-   ![image](https://github.com/user-attachments/assets/17429587-bf89-452d-b191-e42a098b758e)
-   
+   ![Screenshot 2025-03-14 163856](https://github.com/user-attachments/assets/06b0d0a6-7490-44e4-9902-8540279ea171)
+
  
 **Hasil Evaluasi Nasional**
-1. ARIMA RMSE: 2.68 juta
-2. LSTM RMSE (denormalized): 1.04 juta
- 
-**Hasil Evaluasi Jawa Timur**
-1. ARIMA RMSE (Jawa Timur): 2.3 juta
-2. LSTM RMSE (Jawa Timur, denormalized): 980 ribu
- 
-- Model **LSTM** menghasilkan RMSE lebih rendah dibandingkan **ARIMA**, menunjukkan bahwa model deep learning lebih baik dalam menangkap pola tren gaji.
-- MAE dari LSTM juga lebih rendah, menunjukkan prediksi yang lebih stabil dibandingkan ARIMA.
+
+ARIMA:
+1. RMSE: Rp 2.69 jt
+2. MAE : Rp 2.69 jt
+3. MSE : Rp 7,210.08 M
+
+LSTM:
+1. RMSE: Rp 1.42 jt
+2. MAE : Rp 1.42 jt
+3. MSE : Rp 2,018.51 M
+
+Insight yang diperoleh : 
+- ARIMA memiliki nilai RMSE dan MAE sekitar Rp 2.69 juta, yang berarti rata-rata deviasi prediksi terhadap data aktual cukup besar.
+- LSTM menunjukkan performa lebih baik dengan RMSE dan MAE sebesar Rp 1.42 juta, atau sekitar 47% lebih kecil dibanding ARIMA.
+- Selisih MSE yang cukup signifikan (Rp 7,210.08 M vs Rp 2,018.51 M) menunjukkan bahwa LSTM jauh lebih stabil dan efektif dalam mereduksi error besar dalam prediksi.
+- Artinya, untuk skala nasional, LSTM lebih andal untuk forecasting tren gaji, terutama saat menghadapi pola gaji yang fluktuatif di beberapa tahun terakhir.
+
+Prediksi Gaji Nasional
+- 2023: Rp 4.60 jt
+- 2024: Rp 5.40 jt
+- 2025: Rp 6.82 jt
+
+Prediksi Gaji Jawa Timur
+- 2023: Rp 3.00 jt
+- 2024: Rp 3.53 jt
+- 2025: Rp 4.44 jt
  
 **Kesimpulan:**
-- LSTM lebih unggul dibandingkan ARIMA dalam menangkap pola tren gaji, baik secara nasional maupun regional.
-- RMSE dan MAE LSTM lebih kecil dibanding ARIMA, menunjukkan prediksi yang lebih akurat dan stabil.
-- MSE LSTM lebih kecil dibanding ARIMA, menunjukkan bahwa model deep learning mampu mengurangi kesalahan besar lebih baik dibanding model statistik.
+- Model LSTM menghasilkan RMSE, MAE, dan MSE lebih rendah dibandingkan ARIMA, menunjukkan bahwa model deep learning lebih baik dalam menangkap pola tren gaji.
+- LSTM unggul untuk prediksi baik nasional maupun regional (Jawa Timur).
+- Prediksi gaji menunjukkan tren kenaikan yang signifikan baik secara nasional maupun di Jawa Timur dalam 3 tahun ke depan.
  
 ---
